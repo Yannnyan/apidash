@@ -716,7 +716,56 @@ class JsonExplorerStore extends ChangeNotifier {
 
     expandNode(parent);
   }
+  
+  Map<String,dynamic> toMap(NodeViewModelState node) {
+    Map<String,dynamic> json = <String,dynamic>{};
+    for(var child in node.children) {
+      if (child.isArray) {
+        json[child.key] = toArray(child);
+      }
+      else if (child.isClass) {
+        json[child.key] = toMap(child);
+      }
+      else {
+        json[child.key] = child.value;
+      }
+    }
+    return json;
+  }
+  
+  List<dynamic> toArray(NodeViewModelState node) {
+    List<dynamic> list = List.empty(growable: true);
+    for(var child in node.children) {
+      if (child.isArray) {
+        list.add(toArray(child));
+      }
+      else if (child.isClass) {
+        list.add(toMap(child));
+      }
+      else {
+        list.add(child.value);
+      }
+    }
+    return list;
+  }
+  Map<String,dynamic> export() {
+    Map<String,dynamic> json = <String,dynamic>{};
+    var nodes = displayNodes;
+    for(var node in nodes) {
+      if (node.isArray) {
+        json[node.key] = toArray(node);
+      }
+      else if (node.isClass) {
+        json[node.key] = toMap(node);
+      }
+      else {
+        json[node.key] = node.value;
+      }
+    }
+    return json;
+  }
 }
+
 
 /// A matched search in the given [node].
 ///

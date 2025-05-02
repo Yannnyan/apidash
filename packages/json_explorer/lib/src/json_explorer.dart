@@ -541,9 +541,13 @@ class _PropertyNodeWidget extends StatelessWidget {
     );
 
     final text = valueFormatter?.call(node.value) ?? node.value.toString();
-
+    var controller = TextEditingController();
+    controller.text = text;
+    controller.addListener(() {
+      node.value = controller.text;
+    });
     if (!showHighlightedText) {
-      return SelectableText(text, style: style);
+      return TextField(style: style, controller: controller, decoration: InputDecoration(border: InputBorder.none),);
     }
 
     final focusedSearchMatchIndex =
